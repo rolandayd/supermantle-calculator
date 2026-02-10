@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperMantle | Institutional Yield Intelligence</title>
+    <title>SuperMantle | Yield Intelligence</title>
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display-all" rel="stylesheet">
     <link rel="stylesheet" href="style-v2.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,21 +12,19 @@
     <nav class="apple-nav">
         <div class="nav-content">
             <span class="logo">SuperMantle <span class="thin">Intelligence</span></span>
-            <div class="network-status">
-                <span class="dot"></span> Mantle Mainnet
-            </div>
+            <div class="network-pill"><span class="dot"></span> Mantle Mainnet</div>
         </div>
     </nav>
 
     <main class="app-container">
-        <div id="setup-wizard">
+        <div id="wizard-container">
             <div class="header-group">
-                <p id="step-counter">Step 1 of 4</p>
-                <h1 id="main-heading">Deployment Capital</h1>
+                <p id="step-indicator">Step 1 of 4</p>
+                <h1 id="step-title">Deployment Capital</h1>
             </div>
 
-            <div class="step-content">
-                <div class="step-view active" id="view-1">
+            <div class="step-views">
+                <div class="view active" id="view-1">
                     <div class="input-hero">
                         <span class="unit">$</span>
                         <input type="text" id="capDisplay" value="5,000" readonly>
@@ -38,96 +36,104 @@
                     </div>
                 </div>
 
-                <div class="step-view" id="view-2">
-                    <div class="selector-stack">
-                        <div class="selection-card" data-type="goal" data-val="yield">
-                            <div class="card-title">Aggressive Yield</div>
-                            <div class="card-desc">Maximize $MNT and $mETH returns through active liquidity provision.</div>
+                <div class="view" id="view-2">
+                    <div class="selection-stack">
+                        <div class="select-card" data-cat="goal" data-val="max">
+                            <div class="card-info">
+                                <h3>Aggressive Alpha</h3>
+                                <p>Maximize MNT/mETH returns via high-velocity LPs.</p>
+                            </div>
                         </div>
-                        <div class="selection-card" data-type="goal" data-val="balanced">
-                            <div class="card-title">Balanced Growth</div>
-                            <div class="card-desc">Moderate risk using a mix of staking and blue-chip LPs.</div>
+                        <div class="select-card" data-cat="goal" data-val="bal">
+                            <div class="card-info">
+                                <h3>Balanced Yield</h3>
+                                <p>Stable growth using staking and blue-chip pairs.</p>
+                            </div>
                         </div>
-                        <div class="selection-card" data-type="goal" data-val="safety">
-                            <div class="card-title">Capital Preservation</div>
-                            <div class="card-desc">Focus on Mantle LSP and stable-pegged yield assets.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-view" id="view-3">
-                    <div class="selector-stack">
-                        <div class="selection-card" data-type="style" data-val="passive">
-                            <div class="card-title">Passive Management</div>
-                            <div class="card-desc">Low maintenance. Rebalance once every 30 days.</div>
-                        </div>
-                        <div class="selection-card" data-type="style" data-val="active">
-                            <div class="card-title">Active Farming</div>
-                            <div class="card-desc">Daily monitoring for incentive rotations and compounding.</div>
+                        <div class="select-card" data-cat="goal" data-val="safe">
+                            <div class="card-info">
+                                <h3>Capital Shield</h3>
+                                <p>Focus on principal safety and mETH staking.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="step-view" id="view-4">
-                    <div class="risk-display">
-                        <div class="risk-level" id="riskLevelName">Moderate</div>
-                        <p class="dim-text">This profile permits moderate exposure to Impermanent Loss in exchange for higher APR.</p>
+                <div class="view" id="view-3">
+                    <div class="selection-stack">
+                        <div class="select-card" data-cat="style" data-val="passive">
+                            <div class="card-info">
+                                <h3>Passive Set-and-Forget</h3>
+                                <p>Low maintenance. Best for long-term holders.</p>
+                            </div>
+                        </div>
+                        <div class="select-card" data-cat="style" data-val="active">
+                            <div class="card-info">
+                                <h3>Active Farming</h3>
+                                <p>Requires daily monitoring for incentive rotations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view" id="view-4">
+                    <div class="risk-summary">
+                        <h2 id="riskValue">Moderate</h2>
+                        <p class="dim-text">Accepts moderate price volatility for enhanced reward multipliers.</p>
                     </div>
                     <input type="range" id="riskSlider" min="1" max="3" step="1" value="2" class="apple-slider">
                 </div>
             </div>
 
-            <div class="action-bar">
-                <button id="backBtn" class="nav-btn secondary" disabled>Back</button>
-                <button id="nextBtn" class="nav-btn primary">Continue</button>
+            <div class="nav-actions">
+                <button id="backBtn" class="btn secondary" disabled>Back</button>
+                <button id="nextBtn" class="btn primary">Continue</button>
             </div>
         </div>
 
-        <div id="results-ui" style="display:none">
-            <div class="result-hero">
+        <div id="results-container" style="display:none">
+            <div class="res-header">
                 <span class="badge">Optimized Portfolio</span>
-                <h1 id="stratName">Strategy Name</h1>
-                <p id="stratDesc" class="dim-text"></p>
+                <h1 id="resStratName">Strategy Name</h1>
             </div>
 
-            <div class="grid-layout">
-                <div class="grid-main">
-                    <div class="apple-card">
+            <div class="res-grid">
+                <div class="res-main">
+                    <div class="glass-card">
                         <h3>Allocation Breakdown</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="allocationChart"></canvas>
+                        <div class="chart-box">
+                            <canvas id="yieldChart"></canvas>
                         </div>
-                        <div id="legend-container"></div>
                     </div>
-                    
-                    <div class="apple-card">
+
+                    <div class="glass-card">
                         <h3>Execution Roadmap</h3>
-                        <div id="actionSteps" class="roadmap"></div>
+                        <div id="roadmapSteps" class="roadmap"></div>
                     </div>
                 </div>
 
-                <div class="grid-sidebar">
-                    <div class="apple-card metrics">
-                        <div class="metric-item">
-                            <span class="m-label">Est. Annual Yield</span>
-                            <span class="m-value" id="estYield">--</span>
+                <div class="res-sidebar">
+                    <div class="glass-card metric-card">
+                        <div class="metric">
+                            <label>Est. Yearly APR</label>
+                            <div class="value" id="resAPR">--</div>
                         </div>
-                        <div class="metric-item">
-                            <span class="m-label">Complexity</span>
-                            <span class="m-value" id="compValue">--</span>
+                        <div class="metric">
+                            <label>Complexity</label>
+                            <div class="value" id="resComp">--</div>
                         </div>
                     </div>
 
-                    <div class="apple-card protocol-tags">
-                        <h3>Verified Protocols</h3>
-                        <div id="protocolList"></div>
+                    <div class="glass-card">
+                        <h3>Protocols</h3>
+                        <div id="protocolPills" class="pills"></div>
                     </div>
                 </div>
             </div>
-
-            <button class="nav-btn primary full-width" onclick="location.reload()">Start New Session</button>
+            <button class="btn primary full" onclick="location.reload()">New Strategy</button>
         </div>
     </main>
+
+    <script src="script-v2.js"></script>
 </body>
-<script src="script-v2.js"></script>
 </html>
