@@ -3,38 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperMantle | Premium Strategy Optimizer</title>
-    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/sf-pro-display-all">
+    <title>SuperMantle | Yield Intelligence</title>
+    <link href="https://fonts.cdnfonts.com/css/sf-pro-display-all" rel="stylesheet">
     <link rel="stylesheet" href="style-v2.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <nav class="glass-nav">
+    <div class="glass-bg"></div>
+
+    <nav class="apple-nav">
         <div class="nav-content">
-            <div class="brand">SUPERMANTLE <span class="v2-tag">PRO</span></div>
-            <div class="status-pill">● Mantle Network</div>
+            <span class="logo">SuperMantle</span>
+            <div class="network-pill">Mantle Mainnet</div>
         </div>
     </nav>
 
-    <main class="app-container">
-        <div class="stepper">
-            <div class="step-line"><div class="step-fill" id="progressFill"></div></div>
-        </div>
-
-        <section id="calculator">
-            <div class="question-card active" data-question="1">
-                <span class="step-indicator">01 — CAPITAL</span>
-                <h1>Deployment Size</h1>
-                <p class="description">Select the total amount you intend to deploy across the ecosystem.</p>
-                
-                <div class="input-container">
-                    <span class="currency">$</span>
-                    <input type="text" id="capitalInput" class="big-input" value="5,000">
-                </div>
-                <input type="range" id="capitalSlider" min="100" max="100000" value="5000" step="100" class="apple-slider">
+    <main class="app-wrapper">
+        <div id="calculator-ui">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
 
-            <div class="question-card" data-question="2">
+            <div class="step active" data-step="1">
+                <p class="step-label">Step 1 of 4</p>
+                <h1>Deployment Capital</h1>
+                <div class="input-group">
+                    <span class="symbol">$</span>
+                    <input type="text" id="capDisplay" value="5,000" readonly>
+                </div>
+                <input type="range" id="capSlider" min="500" max="100000" step="500" value="5000" class="apple-slider">
+            </div>
+
+            <div class="step" data-step="2">
+                <p class="step-label">Step 2 of 4</p>
+                <h1>Investment Goal</h1>
+                <div class="options-stack">
+                    <div class="apple-card" data-val="max">High Yield Focus</div>
+                    <div class="apple-card" data-val="bal">Balanced Growth</div>
+                    <div class="apple-card" data-val="safe">Capital Protection</div>
+                </div>
+            </div>
+
+            <div class="step" data-step="3">
+                <p class="step-label">Step 3 of 4</p>
+                <h1>Strategy Style</h1>
+                <div class="options-stack">
+                    <div class="apple-card" data-val="passive">Passive (Set & Forget)</div>
+                    <div class="apple-card" data-val="active">Active (Manual Compounding)</div>
+                </div>
+            </div>
+
+            <div class="step" data-step="4">
+                <p class="step-label">Step 4 of 4</p>
+                <h1>Risk Appetite</h1>
+                <h2 id="riskText">Moderate</h2>
+                <input type="range" id="riskSlider" min="1" max="3" step="1" value="2" class="apple-slider">
+            </div>
+
+            <div class="footer-nav">
+                <button id="backBtn" class="btn-secondary" style="opacity:0">Back</button>
+                <button id="nextBtn" class="btn-primary">Continue</button>
+            </div>
+        </div>
+
+        <div id="results-ui" style="display:none">
+            <div class="result-header">
+                <p class="step-label">Recommended Strategy</p>
+                <h1 id="resName">--</h1>
+            </div>
+
+            <div class="results-grid">
+                <div class="apple-card no-hover">
+                    <h3>Allocation</h3>
+                    <div class="chart-box">
+                        <canvas id="yieldChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="apple-card no-hover">
+                    <h3>Strategy Analysis</h3>
+                    <p id="resAnalysis" class="dim-text"></p>
+                    <div class="risk-meter-box">
+                        <span class="label">Risk Level:</span>
+                        <span id="resRisk" class="risk-badge">Low</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="full-width-card apple-card no-hover">
+                <h3>Required Actions</h3>
+                <ul id="resSteps" class="steps-list"></ul>
+            </div>
+
+            <button class="btn-primary full-width" onclick="location.reload()">Start New Session</button>
+        </div>
+    </main>
+
+    <script src="script-v2.js"></script>
+</body>
+</html>            <div class="question-card" data-question="2">
                 <span class="step-indicator">02 — OBJECTIVE</span>
                 <h1>Your Primary Goal</h1>
                 <div class="clean-grid">
