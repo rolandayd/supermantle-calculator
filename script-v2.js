@@ -1,62 +1,53 @@
-// State Management
-let step = 1;
-let userInputs = {
-    cap: 5000,
-    goal: null,
-    style: null,
-    risk: 2
-};
+let currentStep = 1;
+let inputs = { cap: 5000, goal: null, style: null, risk: 2 };
 
-const headings = [
+const stepTitles = [
     "Deployment Capital",
     "Primary Objective",
-    "Management Style",
+    "Strategy Style",
     "Risk Profile"
 ];
 
-// Strategy Data (Actionable & Detailed)
-const DATABASE = {
-    'yield': {
-        name: "Mantle Alpha Maximizer",
-        yield: "24.5%",
-        complexity: "Professional",
-        desc: "Designed for active farmers looking to leverage mETH and high-velocity liquidity pools on Merchant Moe.",
-        protocols: ["Mantle LSP", "Merchant Moe", "Agni Finance"],
+const DB = {
+    'max': {
+        name: "Mantle High-Velocity Alpha",
+        apr: "28.4%",
+        comp: "Advanced",
         alloc: [50, 30, 20],
-        labels: ["mETH/WETH LP", "MNT/mETH LP", "Incentive Reserves"],
+        labels: ["mETH/MNT LP", "Merchant Moe", "Incentive Reserves"],
         steps: [
-            { t: "Convert MNT to mETH", d: "Use Mantle LSP to mint mETH. This earns the base staking yield (~4%)." },
-            { t: "Seed Merchant Moe LP", d: "Deposit 50% into the mETH/WETH pool to earn $MOE rewards." },
-            { t: "Leverage Agni", d: "Stake the remaining 30% in Agni's concentrated liquidity MNT/mETH pool." }
-        ]
+            {t: "Stake MNT to mETH", d: "Go to Mantle LSP and stake your MNT for liquid mETH."},
+            {t: "Merchant Moe LP", d: "Add mETH/WETH to liquidity pools for $MOE rewards."},
+            {t: "Agni Concentrated", d: "Deploy 20% to Agni MNT/mETH pools for swap fees."}
+        ],
+        pills: ["Mantle LSP", "Merchant Moe", "Agni Finance"]
     },
-    'balanced': {
-        name: "Ecosystem Core Builder",
-        yield: "12.8%",
-        complexity: "Intermediate",
-        desc: "A stable approach utilizing blue-chip Mantle protocols with lower risk of impermanent loss.",
-        protocols: ["Mantle LSP", "Initia", "Mantle Rewards"],
+    'bal': {
+        name: "Ecosystem Growth Core",
+        apr: "14.2%",
+        comp: "Intermediate",
         alloc: [70, 30],
-        labels: ["Liquid Staked MNT", "Stable/MNT LP"],
+        labels: ["mETH Staking", "Stablecoin LP"],
         steps: [
-            { t: "Liquid Staking", d: "Convert 70% of capital to mETH via Mantle LSP for 1:1 exposure." },
-            { t: "Stable Yield", d: "Provide liquidity to a Stablecoin/MNT pair to hedge against volatility." }
-        ]
+            {t: "Liquid Staking", d: "Convert 70% of capital to mETH for native network yield."},
+            {t: "Hedging", d: "Pair 30% with USDT in a stable pool to minimize volatility."}
+        ],
+        pills: ["Mantle LSP", "Initia", "Byreal"]
     }
 };
 
-// Toggle logic (Selecting cards)
-document.querySelectorAll('.selection-card').forEach(card => {
-    card.addEventListener('click', () => {
-        const category = card.dataset.type;
-        const val = card.dataset.val;
+// Handle Selections (The Toggle Fix)
+document.querySelectorAll('.select-card').forEach(card => {
+    card.addEventListener('click', function() {
+        const cat = this.dataset.cat;
+        const val = this.dataset.val;
         
-        // UI Selection
-        card.parentElement.querySelectorAll('.selection-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
+        // Remove 'selected' from siblings
+        this.parentElement.querySelectorAll('.select-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
         
-        // Update State
-        userInputs[category] = val;
+        // Save to state
+        inputs[cat] = val;
     });
 });
 
@@ -65,73 +56,74 @@ const nextBtn = document.getElementById('nextBtn');
 const backBtn = document.getElementById('backBtn');
 
 nextBtn.addEventListener('click', () => {
-    if (step < 4) {
-        if (step === 2 && !userInputs.goal) return alert("Please select an objective.");
-        if (step === 3 && !userInputs.style) return alert("Please select a style.");
+    if (currentStep < 4) {
+        if (currentStep === 2 && !inputs.goal) return alert("Please select a goal");
+        if (currentStep === 3 && !inputs.style) return alert("Please select a style");
         
-        step++;
+        currentStep++;
         updateWizard();
     } else {
-        calculateResults();
+        renderResults();
     }
 });
 
 backBtn.addEventListener('click', () => {
-    if (step > 1) {
-        step--;
+    if (currentStep > 1) {
+        currentStep--;
         updateWizard();
     }
 });
 
 function updateWizard() {
-    // Update active view
-    document.querySelectorAll('.step-view').forEach((view, idx) => {
-        view.classList.toggle('active', (idx + 1) === step);
+    document.querySelectorAll('.view').forEach((v, i) => {
+        v.classList.toggle('active', (i + 1) === currentStep);
     });
     
-    // Update text
-    document.getElementById('step-counter').innerText = `Step ${step} of 4`;
-    document.getElementById('main-heading').innerText = headings[step - 1];
+    document.getElementById('step-indicator').innerText = `Step ${currentStep} of 4`;
+    document.getElementById('step-title').innerText = stepTitles[currentStep - 1];
     
-    // Update buttons
-    backBtn.disabled = step === 1;
-    nextBtn.innerText = step === 4 ? "Generate Strategy" : "Continue";
+    backBtn.disabled = currentStep === 1;
+    nextBtn.innerText = currentStep === 4 ? "Build My Strategy" : "Continue";
 }
 
-// Capital Slider sync
+// Slider Logic
 const slider = document.getElementById('capSlider');
 const display = document.getElementById('capDisplay');
-slider.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value);
-    display.value = val.toLocaleString();
-    userInputs.cap = val;
-});
+slider.oninput = function() {
+    display.value = parseInt(this.value).toLocaleString();
+    inputs.cap = parseInt(this.value);
+};
 
-// Final Result Rendering
-function calculateResults() {
-    document.getElementById('setup-wizard').style.display = 'none';
-    document.getElementById('results-ui').style.display = 'block';
+// Results Engine
+function renderResults() {
+    document.getElementById('wizard-container').style.display = 'none';
+    document.getElementById('results-container').style.display = 'block';
 
-    const data = userInputs.goal === 'safety' ? DATABASE['balanced'] : DATABASE['yield'];
-    
-    document.getElementById('stratName').innerText = data.name;
-    document.getElementById('stratDesc').innerText = data.desc;
-    document.getElementById('estYield').innerText = data.yield;
-    document.getElementById('compValue').innerText = data.complexity;
+    const data = (inputs.goal === 'safe') ? DB['bal'] : DB['max'];
 
-    // Build Roadmap
-    const roadmap = document.getElementById('actionSteps');
-    roadmap.innerHTML = data.steps.map(s => `<div><b>${s.t}</b>${s.d}</div>`).join('');
+    document.getElementById('resStratName').innerText = data.name;
+    document.getElementById('resAPR').innerText = data.apr;
+    document.getElementById('resComp').innerText = data.comp;
 
-    // Load Chart
-    const ctx = document.getElementById('allocationChart').getContext('2d');
+    // Roadmap
+    document.getElementById('roadmapSteps').innerHTML = data.steps.map(s => 
+        `<div><b>${s.t}</b>${s.d}</div>`
+    ).join('');
+
+    // Pills
+    document.getElementById('protocolPills').innerHTML = data.pills.map(p => 
+        `<span>${p}</span>`
+    ).join('');
+
+    // Chart
+    const ctx = document.getElementById('yieldChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: data.labels,
             datasets: [{
                 data: data.alloc,
-                backgroundColor: ['#00D4AA', '#FFFFFF', '#3A3A3C'],
+                backgroundColor: ['#00D4AA', '#FFFFFF', '#333333'],
                 borderWidth: 0
             }]
         },
