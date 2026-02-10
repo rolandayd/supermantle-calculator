@@ -3,172 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperMantle | Yield Intelligence</title>
+    <title>SuperMantle | Institutional Yield Intelligence</title>
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display-all" rel="stylesheet">
     <link rel="stylesheet" href="style-v2.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="glass-bg"></div>
-
     <nav class="apple-nav">
         <div class="nav-content">
-            <span class="logo">SuperMantle</span>
-            <div class="network-pill">Mantle Mainnet</div>
+            <span class="logo">SuperMantle <span class="thin">Intelligence</span></span>
+            <div class="network-status">
+                <span class="dot"></span> Mantle Mainnet
+            </div>
         </div>
     </nav>
 
-    <main class="app-wrapper">
-        <div id="calculator-ui">
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
+    <main class="app-container">
+        <div id="setup-wizard">
+            <div class="header-group">
+                <p id="step-counter">Step 1 of 4</p>
+                <h1 id="main-heading">Deployment Capital</h1>
             </div>
 
-            <div class="step active" data-step="1">
-                <p class="step-label">Step 1 of 4</p>
-                <h1>Deployment Capital</h1>
-                <div class="input-group">
-                    <span class="symbol">$</span>
-                    <input type="text" id="capDisplay" value="5,000" readonly>
+            <div class="step-content">
+                <div class="step-view active" id="view-1">
+                    <div class="input-hero">
+                        <span class="unit">$</span>
+                        <input type="text" id="capDisplay" value="5,000" readonly>
+                    </div>
+                    <input type="range" id="capSlider" min="500" max="100000" step="500" value="5000" class="apple-slider">
+                    <div class="slider-labels">
+                        <span>$500</span>
+                        <span>$100,000+</span>
+                    </div>
                 </div>
-                <input type="range" id="capSlider" min="500" max="100000" step="500" value="5000" class="apple-slider">
-            </div>
 
-            <div class="step" data-step="2">
-                <p class="step-label">Step 2 of 4</p>
-                <h1>Investment Goal</h1>
-                <div class="options-stack">
-                    <div class="apple-card" data-val="max">High Yield Focus</div>
-                    <div class="apple-card" data-val="bal">Balanced Growth</div>
-                    <div class="apple-card" data-val="safe">Capital Protection</div>
+                <div class="step-view" id="view-2">
+                    <div class="selector-stack">
+                        <div class="selection-card" data-type="goal" data-val="yield">
+                            <div class="card-title">Aggressive Yield</div>
+                            <div class="card-desc">Maximize $MNT and $mETH returns through active liquidity provision.</div>
+                        </div>
+                        <div class="selection-card" data-type="goal" data-val="balanced">
+                            <div class="card-title">Balanced Growth</div>
+                            <div class="card-desc">Moderate risk using a mix of staking and blue-chip LPs.</div>
+                        </div>
+                        <div class="selection-card" data-type="goal" data-val="safety">
+                            <div class="card-title">Capital Preservation</div>
+                            <div class="card-desc">Focus on Mantle LSP and stable-pegged yield assets.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-view" id="view-3">
+                    <div class="selector-stack">
+                        <div class="selection-card" data-type="style" data-val="passive">
+                            <div class="card-title">Passive Management</div>
+                            <div class="card-desc">Low maintenance. Rebalance once every 30 days.</div>
+                        </div>
+                        <div class="selection-card" data-type="style" data-val="active">
+                            <div class="card-title">Active Farming</div>
+                            <div class="card-desc">Daily monitoring for incentive rotations and compounding.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-view" id="view-4">
+                    <div class="risk-display">
+                        <div class="risk-level" id="riskLevelName">Moderate</div>
+                        <p class="dim-text">This profile permits moderate exposure to Impermanent Loss in exchange for higher APR.</p>
+                    </div>
+                    <input type="range" id="riskSlider" min="1" max="3" step="1" value="2" class="apple-slider">
                 </div>
             </div>
 
-            <div class="step" data-step="3">
-                <p class="step-label">Step 3 of 4</p>
-                <h1>Strategy Style</h1>
-                <div class="options-stack">
-                    <div class="apple-card" data-val="passive">Passive (Set & Forget)</div>
-                    <div class="apple-card" data-val="active">Active (Manual Compounding)</div>
-                </div>
-            </div>
-
-            <div class="step" data-step="4">
-                <p class="step-label">Step 4 of 4</p>
-                <h1>Risk Appetite</h1>
-                <h2 id="riskText">Moderate</h2>
-                <input type="range" id="riskSlider" min="1" max="3" step="1" value="2" class="apple-slider">
-            </div>
-
-            <div class="footer-nav">
-                <button id="backBtn" class="btn-secondary" style="opacity:0">Back</button>
-                <button id="nextBtn" class="btn-primary">Continue</button>
+            <div class="action-bar">
+                <button id="backBtn" class="nav-btn secondary" disabled>Back</button>
+                <button id="nextBtn" class="nav-btn primary">Continue</button>
             </div>
         </div>
 
         <div id="results-ui" style="display:none">
-            <div class="result-header">
-                <p class="step-label">Recommended Strategy</p>
-                <h1 id="resName">--</h1>
+            <div class="result-hero">
+                <span class="badge">Optimized Portfolio</span>
+                <h1 id="stratName">Strategy Name</h1>
+                <p id="stratDesc" class="dim-text"></p>
             </div>
 
-            <div class="results-grid">
-                <div class="apple-card no-hover">
-                    <h3>Allocation</h3>
-                    <div class="chart-box">
-                        <canvas id="yieldChart"></canvas>
+            <div class="grid-layout">
+                <div class="grid-main">
+                    <div class="apple-card">
+                        <h3>Allocation Breakdown</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                        <div id="legend-container"></div>
+                    </div>
+                    
+                    <div class="apple-card">
+                        <h3>Execution Roadmap</h3>
+                        <div id="actionSteps" class="roadmap"></div>
                     </div>
                 </div>
 
-                <div class="apple-card no-hover">
-                    <h3>Strategy Analysis</h3>
-                    <p id="resAnalysis" class="dim-text"></p>
-                    <div class="risk-meter-box">
-                        <span class="label">Risk Level:</span>
-                        <span id="resRisk" class="risk-badge">Low</span>
+                <div class="grid-sidebar">
+                    <div class="apple-card metrics">
+                        <div class="metric-item">
+                            <span class="m-label">Est. Annual Yield</span>
+                            <span class="m-value" id="estYield">--</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="m-label">Complexity</span>
+                            <span class="m-value" id="compValue">--</span>
+                        </div>
+                    </div>
+
+                    <div class="apple-card protocol-tags">
+                        <h3>Verified Protocols</h3>
+                        <div id="protocolList"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="full-width-card apple-card no-hover">
-                <h3>Required Actions</h3>
-                <ul id="resSteps" class="steps-list"></ul>
-            </div>
-
-            <button class="btn-primary full-width" onclick="location.reload()">Start New Session</button>
+            <button class="nav-btn primary full-width" onclick="location.reload()">Start New Session</button>
         </div>
     </main>
-
-    <script src="script-v2.js"></script>
 </body>
-</html>            <div class="question-card" data-question="2">
-                <span class="step-indicator">02 — OBJECTIVE</span>
-                <h1>Your Primary Goal</h1>
-                <div class="clean-grid">
-                    <button class="list-item" data-value="max-returns">
-                        <div class="item-text">
-                            <h3>High Yield Growth</h3>
-                            <span>Maximize APR through active farming</span>
-                        </div>
-                    </button>
-                    <button class="list-item" data-value="balanced">
-                        <div class="item-text">
-                            <h3>Balanced Performance</h3>
-                            <span>Steady growth with lower volatility</span>
-                        </div>
-                    </button>
-                    <button class="list-item" data-value="capital-preservation">
-                        <div class="item-text">
-                            <h3>Asset Protection</h3>
-                            <span>Focus on stable yields and principal safety</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <div class="question-card" data-question="3">
-                <span class="step-indicator">03 — COMMITMENT</span>
-                <h1>Management Style</h1>
-                <div class="clean-grid">
-                    <button class="list-item" data-value="passive">
-                        <div class="item-text">
-                            <h3>Passive</h3>
-                            <span>Weekly or monthly check-ins</span>
-                        </div>
-                    </button>
-                    <button class="list-item" data-value="active">
-                        <div class="item-text">
-                            <h3>Active</h3>
-                            <span>Daily monitoring and rebalancing</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <div class="question-card" data-question="4">
-                <span class="step-indicator">04 — RISK PROFILE</span>
-                <h1>Risk Tolerance</h1>
-                <p class="description">How comfortable are you with market fluctuations?</p>
-                <div class="risk-meter">
-                    <div class="risk-labels">
-                        <span>Low</span>
-                        <span id="riskValueText">Moderate</span>
-                        <span>High</span>
-                    </div>
-                    <input type="range" id="riskSlider" min="1" max="5" value="3" step="1" class="apple-slider">
-                </div>
-            </div>
-
-            <div class="nav-controls">
-                <button id="prevBtn" class="btn-ghost" style="visibility: hidden;">Back</button>
-                <button id="nextBtn" class="btn-apple">Continue</button>
-            </div>
-        </section>
-
-        <section id="resultsSection" class="results-layout" style="display: none;">
-            </section>
-    </main>
-
-    <script src="script-v2.js"></script>
-</body>
+<script src="script-v2.js"></script>
 </html>
