@@ -1,108 +1,144 @@
-let currentStep = 1;
-let inputs = { cap: 5000, goal: null, style: null, risk: 2 };
-let chartInstance = null;
+// State Management
+let step = 1;
+let userInputs = {
+    cap: 5000,
+    goal: null,
+    style: null,
+    risk: 2
+};
 
-const STRATEGIES = {
-    high: {
-        name: "Aggressive Alpha",
-        alloc: [60, 30, 10],
-        labels: ["mETH-MNT LP", "Agni Finance", "Lendle"],
-        risk: "High",
-        analysis: "Maximum capital efficiency utilizing Mantle's liquid staking ecosystem. High yield potential with active price exposure.",
-        steps: ["Stake MNT for mETH", "Pair mETH/MNT in Agni LP", "Deposit remaining MNT in Lendle"]
+const headings = [
+    "Deployment Capital",
+    "Primary Objective",
+    "Management Style",
+    "Risk Profile"
+];
+
+// Strategy Data (Actionable & Detailed)
+const DATABASE = {
+    'yield': {
+        name: "Mantle Alpha Maximizer",
+        yield: "24.5%",
+        complexity: "Professional",
+        desc: "Designed for active farmers looking to leverage mETH and high-velocity liquidity pools on Merchant Moe.",
+        protocols: ["Mantle LSP", "Merchant Moe", "Agni Finance"],
+        alloc: [50, 30, 20],
+        labels: ["mETH/WETH LP", "MNT/mETH LP", "Incentive Reserves"],
+        steps: [
+            { t: "Convert MNT to mETH", d: "Use Mantle LSP to mint mETH. This earns the base staking yield (~4%)." },
+            { t: "Seed Merchant Moe LP", d: "Deposit 50% into the mETH/WETH pool to earn $MOE rewards." },
+            { t: "Leverage Agni", d: "Stake the remaining 30% in Agni's concentrated liquidity MNT/mETH pool." }
+        ]
     },
-    bal: {
-        name: "Balanced Ecosystem",
-        alloc: [40, 40, 20],
-        labels: ["Byreal Stable", "Mantle Stake", "Reserve"],
-        risk: "Moderate",
-        analysis: "A diversified approach split between stablecoin pairings and native network staking.",
-        steps: ["Bridge to Mantle via Portal", "Add liquidity to MNT/USDC on Byreal", "Native stake MNT for network rewards"]
-    },
-    safe: {
-        name: "Principal Guardian",
-        alloc: [80, 20],
-        labels: ["Mantle LSP", "Gas Reserve"],
-        risk: "Low",
-        analysis: "Focuses purely on liquid staking with minimal protocol risk. Highest security rating.",
-        steps: ["Convert MNT to mETH via Mantle LSP", "Hold mETH to accrue value", "Maintain reserve for gas fees"]
+    'balanced': {
+        name: "Ecosystem Core Builder",
+        yield: "12.8%",
+        complexity: "Intermediate",
+        desc: "A stable approach utilizing blue-chip Mantle protocols with lower risk of impermanent loss.",
+        protocols: ["Mantle LSP", "Initia", "Mantle Rewards"],
+        alloc: [70, 30],
+        labels: ["Liquid Staked MNT", "Stable/MNT LP"],
+        steps: [
+            { t: "Liquid Staking", d: "Convert 70% of capital to mETH via Mantle LSP for 1:1 exposure." },
+            { t: "Stable Yield", d: "Provide liquidity to a Stablecoin/MNT pair to hedge against volatility." }
+        ]
     }
 };
 
-// Handle Step Transitions
-document.getElementById('nextBtn').addEventListener('click', () => {
-    if (currentStep < 4) {
-        if (currentStep === 2 && !inputs.goal) return alert("Select a goal");
-        if (currentStep === 3 && !inputs.style) return alert("Select a style");
+// Toggle logic (Selecting cards)
+document.querySelectorAll('.selection-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const category = card.dataset.type;
+        const val = card.dataset.val;
         
-        document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
-        currentStep++;
-        document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
-        updateUI();
+        // UI Selection
+        card.parentElement.querySelectorAll('.selection-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        // Update State
+        userInputs[category] = val;
+    });
+});
+
+// Navigation Logic
+const nextBtn = document.getElementById('nextBtn');
+const backBtn = document.getElementById('backBtn');
+
+nextBtn.addEventListener('click', () => {
+    if (step < 4) {
+        if (step === 2 && !userInputs.goal) return alert("Please select an objective.");
+        if (step === 3 && !userInputs.style) return alert("Please select a style.");
+        
+        step++;
+        updateWizard();
     } else {
-        showResults();
+        calculateResults();
     }
 });
 
-// Capital Slider
-const capSlider = document.getElementById('capSlider');
-const capDisplay = document.getElementById('capDisplay');
-capSlider.oninput = function() {
-    capDisplay.value = Number(this.value).toLocaleString();
-    inputs.cap = Number(this.value);
-};
-
-// Selection Logic
-document.querySelectorAll('.apple-card').forEach(card => {
-    card.onclick = function() {
-        const parent = this.parentElement;
-        parent.querySelectorAll('.apple-card').forEach(c => c.classList.remove('selected'));
-        this.classList.add('selected');
-        
-        const step = this.closest('.step').dataset.step;
-        if (step == 2) inputs.goal = this.dataset.val;
-        if (step == 3) inputs.style = this.dataset.val;
-    };
+backBtn.addEventListener('click', () => {
+    if (step > 1) {
+        step--;
+        updateWizard();
+    }
 });
 
-function updateUI() {
-    document.getElementById('progressBar').style.width = (currentStep / 4) * 100 + "%";
-    document.getElementById('backBtn').style.opacity = currentStep > 1 ? "1" : "0";
+function updateWizard() {
+    // Update active view
+    document.querySelectorAll('.step-view').forEach((view, idx) => {
+        view.classList.toggle('active', (idx + 1) === step);
+    });
+    
+    // Update text
+    document.getElementById('step-counter').innerText = `Step ${step} of 4`;
+    document.getElementById('main-heading').innerText = headings[step - 1];
+    
+    // Update buttons
+    backBtn.disabled = step === 1;
+    nextBtn.innerText = step === 4 ? "Generate Strategy" : "Continue";
 }
 
-function showResults() {
-    document.getElementById('calculator-ui').style.display = "none";
-    document.getElementById('results-ui').style.display = "block";
+// Capital Slider sync
+const slider = document.getElementById('capSlider');
+const display = document.getElementById('capDisplay');
+slider.addEventListener('input', (e) => {
+    const val = parseInt(e.target.value);
+    display.value = val.toLocaleString();
+    userInputs.cap = val;
+});
 
-    // Select Strategy
-    let strat = STRATEGIES.bal;
-    if (inputs.goal === 'max' || inputs.risk == 3) strat = STRATEGIES.high;
-    if (inputs.goal === 'safe') strat = STRATEGIES.safe;
+// Final Result Rendering
+function calculateResults() {
+    document.getElementById('setup-wizard').style.display = 'none';
+    document.getElementById('results-ui').style.display = 'block';
 
-    document.getElementById('resName').innerText = strat.name;
-    document.getElementById('resAnalysis').innerText = strat.analysis;
-    document.getElementById('resRisk').innerText = strat.risk;
+    const data = userInputs.goal === 'safety' ? DATABASE['balanced'] : DATABASE['yield'];
     
-    const stepsList = document.getElementById('resSteps');
-    stepsList.innerHTML = strat.steps.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('stratName').innerText = data.name;
+    document.getElementById('stratDesc').innerText = data.desc;
+    document.getElementById('estYield').innerText = data.yield;
+    document.getElementById('compValue').innerText = data.complexity;
+
+    // Build Roadmap
+    const roadmap = document.getElementById('actionSteps');
+    roadmap.innerHTML = data.steps.map(s => `<div><b>${s.t}</b>${s.d}</div>`).join('');
 
     // Load Chart
-    const ctx = document.getElementById('yieldChart').getContext('2d');
-    if (chartInstance) chartInstance.destroy();
-    chartInstance = new Chart(ctx, {
+    const ctx = document.getElementById('allocationChart').getContext('2d');
+    new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: strat.labels,
+            labels: data.labels,
             datasets: [{
-                data: strat.alloc,
-                backgroundColor: ['#00D4AA', '#ffffff', '#333333'],
-                borderWidth: 0,
-                hoverOffset: 10
+                data: data.alloc,
+                backgroundColor: ['#00D4AA', '#FFFFFF', '#3A3A3C'],
+                borderWidth: 0
             }]
         },
         options: {
+            cutout: '80%',
             plugins: { legend: { display: false } },
-            cutout: '80%'
+            maintainAspectRatio: false
         }
     });
 }
