@@ -1,93 +1,108 @@
-let userInputs = { capital: 5000, goal: null, time: null, risk: 3 };
-let currentQuestion = 1;
+let currentStep = 1;
+let inputs = { cap: 5000, goal: null, style: null, risk: 2 };
+let chartInstance = null;
 
 const STRATEGIES = {
-    minnow: {
-        name: "Mantle Starter Deck",
-        alloc: [70, 20, 10],
-        labels: ["Byreal LP", "mETH Staking", "Gas"],
-        analysis: "Focuses on minimizing gas costs while earning the 'Mantle Creator' incentives. Ideal for users starting their journey.",
-        risk: "Low-Medium: Exposure to MNT/USDC price fluctuations.",
-        whatIf: "If MNT price drops 20%, the LP position helps buffer the loss compared to holding raw MNT."
+    high: {
+        name: "Aggressive Alpha",
+        alloc: [60, 30, 10],
+        labels: ["mETH-MNT LP", "Agni Finance", "Lendle"],
+        risk: "High",
+        analysis: "Maximum capital efficiency utilizing Mantle's liquid staking ecosystem. High yield potential with active price exposure.",
+        steps: ["Stake MNT for mETH", "Pair mETH/MNT in Agni LP", "Deposit remaining MNT in Lendle"]
     },
-    growth: {
-        name: "Ecosystem Growth Engine",
-        alloc: [50, 30, 20],
-        labels: ["mETH/MNT LP", "Agni Finance", "Lendle"],
-        analysis: "A high-efficiency strategy using Liquid Staking Tokens (LSTs) to stack yields. This is what Mantle Power Users prefer.",
-        risk: "Medium: Smart contract risk across 3 protocols.",
-        whatIf: "If a protocol is paused, your capital is diversified, protecting 70% of the principal."
+    bal: {
+        name: "Balanced Ecosystem",
+        alloc: [40, 40, 20],
+        labels: ["Byreal Stable", "Mantle Stake", "Reserve"],
+        risk: "Moderate",
+        analysis: "A diversified approach split between stablecoin pairings and native network staking.",
+        steps: ["Bridge to Mantle via Portal", "Add liquidity to MNT/USDC on Byreal", "Native stake MNT for network rewards"]
+    },
+    safe: {
+        name: "Principal Guardian",
+        alloc: [80, 20],
+        labels: ["Mantle LSP", "Gas Reserve"],
+        risk: "Low",
+        analysis: "Focuses purely on liquid staking with minimal protocol risk. Highest security rating.",
+        steps: ["Convert MNT to mETH via Mantle LSP", "Hold mETH to accrue value", "Maintain reserve for gas fees"]
     }
 };
 
-// ... (Logic for switching questions - same as before but updated IDs)
-
-function nextQuestion() {
-    if (currentQuestion < 4) {
-        document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
-        currentQuestion++;
-        document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
-        updateProgress();
+// Handle Step Transitions
+document.getElementById('nextBtn').addEventListener('click', () => {
+    if (currentStep < 4) {
+        if (currentStep === 2 && !inputs.goal) return alert("Select a goal");
+        if (currentStep === 3 && !inputs.style) return alert("Select a style");
+        
+        document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep++;
+        document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+        updateUI();
     } else {
-        renderResults();
+        showResults();
     }
+});
+
+// Capital Slider
+const capSlider = document.getElementById('capSlider');
+const capDisplay = document.getElementById('capDisplay');
+capSlider.oninput = function() {
+    capDisplay.value = Number(this.value).toLocaleString();
+    inputs.cap = Number(this.value);
+};
+
+// Selection Logic
+document.querySelectorAll('.apple-card').forEach(card => {
+    card.onclick = function() {
+        const parent = this.parentElement;
+        parent.querySelectorAll('.apple-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        
+        const step = this.closest('.step').dataset.step;
+        if (step == 2) inputs.goal = this.dataset.val;
+        if (step == 3) inputs.style = this.dataset.val;
+    };
+});
+
+function updateUI() {
+    document.getElementById('progressBar').style.width = (currentStep / 4) * 100 + "%";
+    document.getElementById('backBtn').style.opacity = currentStep > 1 ? "1" : "0";
 }
 
-function renderResults() {
-    const strategy = userInputs.capital > 5000 ? STRATEGIES.growth : STRATEGIES.minnow;
-    document.getElementById('calculator').style.display = 'none';
-    const res = document.getElementById('resultsSection');
-    res.style.display = 'block';
+function showResults() {
+    document.getElementById('calculator-ui').style.display = "none";
+    document.getElementById('results-ui').style.display = "block";
 
-    res.innerHTML = `
-        <div class="full-card">
-            <span class="step-indicator">RECOMMENDED STRATEGY</span>
-            <h1>${strategy.name}</h1>
-            <div class="results-grid">
-                <div class="chart-container">
-                    <canvas id="yieldChart"></canvas>
-                </div>
-                <div>
-                    <p>${strategy.analysis}</p>
-                    <div class="risk-tag">RISK: ${strategy.risk}</div>
-                </div>
-            </div>
-        </div>
-        <div class="full-card">
-            <h3>Strategic Scenarios (What-Ifs)</h3>
-            <p style="color: var(--text-dim)">${strategy.whatIf}</p>
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-            <h3>Mantle Protocol Safety</h3>
-            <p style="color: var(--text-dim)">All protocols suggested are Mantle-native and have undergone security audits. We recommend checking the <strong>Mantle LSP</strong> security docs for LST-specific risks.</p>
-        </div>
-        <button class="btn-apple" onclick="location.reload()">Reset Calculator</button>
-    `;
+    // Select Strategy
+    let strat = STRATEGIES.bal;
+    if (inputs.goal === 'max' || inputs.risk == 3) strat = STRATEGIES.high;
+    if (inputs.goal === 'safe') strat = STRATEGIES.safe;
 
-    // Initialize the Pie Chart
+    document.getElementById('resName').innerText = strat.name;
+    document.getElementById('resAnalysis').innerText = strat.analysis;
+    document.getElementById('resRisk').innerText = strat.risk;
+    
+    const stepsList = document.getElementById('resSteps');
+    stepsList.innerHTML = strat.steps.map(s => `<li>${s}</li>`).join('');
+
+    // Load Chart
     const ctx = document.getElementById('yieldChart').getContext('2d');
-    new Chart(ctx, {
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: strategy.labels,
+            labels: strat.labels,
             datasets: [{
-                data: strategy.alloc,
-                backgroundColor: ['#00D4AA', '#6366F1', '#3A3A3C'],
-                borderWidth: 0
+                data: strat.alloc,
+                backgroundColor: ['#00D4AA', '#ffffff', '#333333'],
+                borderWidth: 0,
+                hoverOffset: 10
             }]
         },
         options: {
-            cutout: '70%',
-            plugins: { legend: { display: false } }
+            plugins: { legend: { display: false } },
+            cutout: '80%'
         }
     });
 }
-
-// Attach listeners to nextBtn, prevBtn, and list-items
-document.getElementById('nextBtn').addEventListener('click', nextQuestion);
-document.querySelectorAll('.list-item').forEach(item => {
-    item.addEventListener('click', () => {
-        item.parentElement.querySelectorAll('.list-item').forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        userInputs[item.closest('.question-card').dataset.question] = item.dataset.value;
-    });
-});
