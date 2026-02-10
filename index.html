@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperMantle Strategy Calculator | Find Your Perfect MNT Strategy</title>
+    <meta name="description" content="Get a personalized SuperMantle ($MNT) yield farming strategy in 60 seconds. Free calculator for Mantle, Solana, Byreal, and Bybit.">
+    <link rel="stylesheet" href="style-v2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="logo-badge">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 6L15 9L12 12L9 9L12 6Z" fill="currentColor"/>
+                        <path d="M12 12L15 15L12 18L9 15L12 12Z" fill="currentColor"/>
+                    </svg>
+                    <span>SuperMantle</span>
+                </div>
+                <h1>Find Your Perfect<br><span class="gradient-text">MNT Yield Strategy</span></h1>
+                <p class="hero-subtitle">Answer 5 quick questions. Get a personalized roadmap to maximize your returns.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="calculator-wrapper">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-card active" data-question="1">
+                <div class="question-header">
+                    <span class="question-number">1/5</span>
+                    <h2 class="question-title">How much are you deploying?</h2>
+                    <p class="question-subtitle">Be honest - strategies vary by capital size</p>
+                </div>
+                
+                <div class="capital-display-big">
+                    <span class="dollar-sign">$</span>
+                    <input type="text" id="capitalInput" class="capital-input-big" value="5,000">
+                </div>
+                
+                <input type="range" id="capitalSlider" min="100" max="100000" value="5000" step="100" class="slider-modern">
+                
+                <div class="range-labels-modern">
+                    <span>$100</span>
+                    <span>$100K</span>
+                </div>
+            </div>
+
+            <div class="question-card" data-question="2">
+                <div class="question-header">
+                    <span class="question-number">2/5</span>
+                    <h2 class="question-title">What's your main goal?</h2>
+                    <p class="question-subtitle">This helps us match you with the right strategy type</p>
+                </div>
+                
+                <div class="options-grid">
+                    <button class="option-card" data-value="max-returns">
+                        <div class="option-icon">📈</div>
+                        <div class="option-content">
+                            <h3>Maximum Returns</h3>
+                            <p>I want the highest APY possible</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="balanced">
+                        <div class="option-icon">⚖️</div>
+                        <div class="option-content">
+                            <h3>Balanced Growth</h3>
+                            <p>Good returns with moderate risk</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="capital-preservation">
+                        <div class="option-icon">🛡️</div>
+                        <div class="option-content">
+                            <h3>Capital Preservation</h3>
+                            <p>Protect my funds while earning yield</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="learning">
+                        <div class="option-icon">🎓</div>
+                        <div class="option-content">
+                            <h3>Learning Mode</h3>
+                            <p>I'm new and want to start simple</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-card" data-question="3">
+                <div class="question-header">
+                    <span class="question-number">3/5</span>
+                    <h2 class="question-title">How much time can you commit?</h2>
+                    <p class="question-subtitle">Be realistic - consistency matters more than hours</p>
+                </div>
+                
+                <div class="options-grid">
+                    <button class="option-card" data-value="passive">
+                        <div class="option-icon">😴</div>
+                        <div class="option-content">
+                            <h3>Set & Forget</h3>
+                            <p>5-10 minutes per week</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="moderate">
+                        <div class="option-icon">⏰</div>
+                        <div class="option-content">
+                            <h3>Part-Time</h3>
+                            <p>1-2 hours per week</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="active">
+                        <div class="option-icon">💼</div>
+                        <div class="option-content">
+                            <h3>Active Farming</h3>
+                            <p>Daily monitoring & adjustments</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-card" data-question="4">
+                <div class="question-header">
+                    <span class="question-number">4/5</span>
+                    <h2 class="question-title">Your DeFi experience level?</h2>
+                    <p class="question-subtitle">No judgment - we'll match your comfort zone</p>
+                </div>
+                
+                <div class="options-grid">
+                    <button class="option-card" data-value="beginner">
+                        <div class="option-icon">🌱</div>
+                        <div class="option-content">
+                            <h3>Beginner</h3>
+                            <p>New to DeFi / First time farming</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="intermediate">
+                        <div class="option-icon">🚀</div>
+                        <div class="option-content">
+                            <h3>Intermediate</h3>
+                            <p>Used DEXs, understand IL basics</p>
+                        </div>
+                    </button>
+                    
+                    <button class="option-card" data-value="advanced">
+                        <div class="option-icon">⚡</div>
+                        <div class="option-content">
+                            <h3>Advanced</h3>
+                            <p>DeFi veteran, comfortable with complexity</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-card" data-question="5">
+                <div class="question-header">
+                    <span class="question-number">5/5</span>
+                    <h2 class="question-title">Your risk tolerance?</h2>
+                    <p class="question-subtitle">Think about how you'd feel if your position dropped 20%</p>
+                </div>
+                
+                <div class="risk-slider-container">
+                    <div class="risk-labels">
+                        <span class="risk-label">Conservative</span>
+                        <span class="risk-label">Moderate</span>
+                        <span class="risk-label">Aggressive</span>
+                    </div>
+                    <input type="range" id="riskSlider" min="1" max="5" value="3" step="1" class="slider-modern risk-slider">
+                    <div class="risk-value-display">
+                        <span id="riskValueText">Moderate</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-secondary" id="prevBtn" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 16L6 10L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn-primary" id="nextBtn">
+                    <span id="btnText">Continue</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M8 4L14 10L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="disclaimer">
+                <strong>Disclaimer:</strong> Educational estimates only. Actual returns vary. Always DYOR and never invest more than you can afford to lose.
+            </p>
+            <p class="credits">Built for SuperMantle: Rise of Creators bounty</p>
+        </div>
+    </footer>
+
+    <script src="script-v2.js"></script>
+</body>
+</html>
